@@ -8,6 +8,7 @@ import (
 	"github.com/MarinDmitrii/training-store-backend/internal/order/usecase"
 
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 type Application struct {
@@ -22,7 +23,7 @@ func NewApplication(ctx context.Context) (*Application, func()) {
 		panic(err)
 	}
 
-	postgresConnect := fmt.Sprintf("host= %s port= %d user= %s password= %s dbname= %s sslmode=disabled",
+	postgresConnect := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disabled",
 		cfg.Host, cfg.Port, cfg.User, cfg.password, cfg.Database)
 	db, err := sqlx.ConnectContext(ctx, "postgres", postgresConnect)
 	// db, err := sqlx.Open("postgres", postgresConnect)
@@ -41,7 +42,7 @@ func NewApplication(ctx context.Context) (*Application, func()) {
 		SaveOrder:      usecase.NewSaveOrderUseCase(orderRepository),
 		GetOrders:      usecase.NewGetOrdersUseCase(orderRepository),
 		ConfirmPayment: usecase.NewConfirmPaymentUseCase(orderRepository),
-	}, func() { db.Close() }
+	}, func() { /* db.Close() */ }
 }
 
 // func getPaymentService() usecase.PaymentService {

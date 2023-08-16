@@ -67,7 +67,7 @@ func (a *Application) Run(addr string, debug bool) error {
 
 func main() {
 	app := &Application{}
-	err := app.Run(":9090", false)
+	err := app.Run("localhost:9090", false)
 	if err != nil {
 		panic(err)
 	}
