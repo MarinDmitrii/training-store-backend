@@ -1,0 +1,99 @@
+package ports
+
+import (
+	"net/http"
+
+	"github.com/MarinDmitrii/training-store-backend/common/log"
+	"github.com/MarinDmitrii/training-store-backend/internal/order/builder"
+	"github.com/MarinDmitrii/training-store-backend/internal/order/domain"
+	"github.com/MarinDmitrii/training-store-backend/internal/order/usecase"
+	"github.com/labstack/echo/v4"
+)
+
+type HttpOrderHandler struct {
+	app *builder.Application
+}
+
+func NewHttpOrderHandler(app *builder.Application) HttpOrderHandler {
+	return HttpOrderHandler{app: app}
+}
+
+func (h HttpOrderHandler) SaveOrder(ctx echo.Context) error {
+	request := &PostOrder{}
+	if err := ctx.Bind(request); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	saveOrder := &usecase.SaveOrder{
+		Products: []struct {
+			Id       int
+			Image    string
+			Name     string
+			Price    float32
+			Quantity int
+		}(request.Products),
+	}
+
+	orderId, err := h.app.SaveOrder.Execute(ctx.Request().Context(), saveOrder)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, struct {
+		OrderId int `json:"order_id"`
+	}{OrderId: orderId})
+}
+
+func (h HttpOrderHandler) GetOrders(ctx echo.Context) error {
+	orders, err := h.app.GetOrders.Execute(ctx.Request().Context())
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	response := make([]*Order, 0, len(orders))
+	for _, db := range orders {
+		ro := h.mapToResponse(db)
+		response = append(response, &ro)
+	}
+
+	return ctx.JSON(http.StatusOK, response)
+}
+
+func (h HttpOrderHandler) ProcessStripeEvent(ctx echo.Context) error {
+	log.HttpRequest(ctx.Request())
+
+	event := StripeEvent{}
+	if err := ctx.Bind(&event); err != nil {
+		log.Errorf("stripe event error: %v", err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	switch event.Type {
+	case "checkout.session.completed":
+		if err := h.app.ConfirmPayment.Execute(ctx.Request().Context(), event.Data.Object.Id); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		}
+	}
+
+	return ctx.NoContent(http.StatusOK)
+}
+
+func (h HttpOrderHandler) mapToResponse(order domain.Order) Order {
+	return Order{
+		Id:         order.Id,
+		PaymentKey: order.Payment_key,
+		Status:     OrderStatus(order.Status),
+		TotalPrice: float32(order.Total_price) / 100,
+	}
+}
+
+func CustomRegisterHandlers(router EchoRouter, si ServerInterface) {
+
+	wrapper := ServerInterfaceWrapper{
+		Handler: si,
+	}
+
+	router.GET("/orders", wrapper.GetOrders)
+	router.POST("/orders", wrapper.CreateOrder)
+	router.POST("/stripe/webhook", wrapper.ProcessStripeEvent)
+}

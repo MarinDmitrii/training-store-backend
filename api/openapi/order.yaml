@@ -1,0 +1,157 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Training store backend API
+  description: API for making and getting orders
+servers:
+  - url: https://{hostname}/api/v1
+    variables:
+      hostname:
+        default: 127.0.0.1:9090
+paths:
+  /orders:
+    post:
+      tags:
+        - orders
+      summary: Create order
+      operationId: createOrder
+      requestBody:
+        description: Order object that needs to be added to the service
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostOrder'
+        required: true
+      responses:
+        200:
+          description: The order has been made
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        400:
+          description: The request is invalid
+        500:
+          description: Internal server error
+    get:
+      tags:
+        - orders
+      summary: Get orders
+      operationId: getOrders
+      responses:
+        200:
+          description: The orders list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        500:
+          description: Internal server error
+  /stripe/webhook:
+    post:
+      operationId: processStripeEvent
+      tags:
+        - orders
+      requestBody:
+        description: Event info
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StripeEvent'
+      responses:
+        200:
+          description: Event processed
+
+components:
+  schemas:
+    PostOrder:
+      type: object
+      required:
+        - products
+      properties:
+        products:
+          type: array
+          description: The products of the order
+          items:
+            type: object
+            required:
+              - id
+              - name
+              - image
+              - price
+              - quantity
+            properties:
+              id:
+                type: integer
+                description: The unique identifier of the product
+              name:
+                type: string
+                description: The name of the product
+              image:
+                type: string
+                description: The image of the product
+              price:
+                type: number
+                description: The price of the product
+              quantity:
+                type: integer
+    Order:
+      type: object
+      required:
+        - id
+        - payment_key
+        - status
+        - total_price
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the order
+        payment_key:
+          type: string
+          description: The payment key of the order
+        status:
+          type: string
+          description: The status of the order
+          enum:
+            - created
+            - paid
+        total_price:
+          type: number
+          description: The total price of the order
+    StripeEvent:
+      type: object
+      required: [ id, object, api_version, created, type ]
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        api_version:
+          type: string
+          format: date
+        created:
+          type: integer
+        data:
+          type: object
+          properties:
+            object:
+              $ref: '#/components/schemas/StripeObject'
+        type:
+          type: string
+    StripeObject:
+      type: object
+      required: [ id, object, status ]
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        payment_intent:
+          type: string
+        payment_status:
+          type: string
+        status:
+          type: string
