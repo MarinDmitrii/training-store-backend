@@ -7,16 +7,18 @@ networks:
 services:
   postgres:
     image: postgres:15.2
-    container_name: postgresql
+    container_name: postgres
     environment:
-      POSTGRES_DB: "postgresdb"
-      POSTGRES_USER: "admin"
-      POSTGRES_PASSWORD: "root"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     restart: unless-stopped
     networks:
       - training-store-backend
+
+# добавить бинарник проекта
 
   pgadmin:
     container_name: pgadmin4

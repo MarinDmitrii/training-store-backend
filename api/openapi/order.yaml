@@ -98,6 +98,7 @@ components:
                 description: The price of the product
               quantity:
                 type: integer
+                description: The quantity of the product
     Order:
       type: object
       required:

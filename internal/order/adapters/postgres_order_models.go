@@ -5,7 +5,7 @@ import (
 )
 
 type OrderModel struct {
-	Id          int    `db:"id"`
+	ID          int    `db:"id"`
 	Payment_key string `db:"payment_key"`
 	Status      string `db:"status"`
 	Total_price int    `db:"total_price"`
@@ -13,7 +13,7 @@ type OrderModel struct {
 
 func NewOrderModel(order domain.Order) (OrderModel, error) {
 	return OrderModel{
-		Id:          order.Id,
+		ID:          order.ID,
 		Payment_key: order.Payment_key,
 		Status:      order.Status,
 		Total_price: order.Total_price,
@@ -22,7 +22,7 @@ func NewOrderModel(order domain.Order) (OrderModel, error) {
 
 func (model *OrderModel) mapToDomain() domain.Order {
 	return domain.Order{
-		Id:          model.Id,
+		ID:          model.ID,
 		Payment_key: model.Payment_key,
 		Status:      model.Status,
 		Total_price: model.Total_price,

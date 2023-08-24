@@ -48,6 +48,8 @@ func (a *Application) Run(addr string, debug bool) error {
 		MaxHeaderBytes: 1 << 20,
 	}
 
+	log.Println("Server is running...")
+
 	go func() {
 		if err := a.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			panic(err)
@@ -71,4 +73,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 }

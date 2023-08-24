@@ -25,23 +25,31 @@ func (h HttpOrderHandler) SaveOrder(ctx echo.Context) error {
 	}
 
 	saveOrder := &usecase.SaveOrder{
-		Products: []struct {
-			Id       int
-			Image    string
-			Name     string
-			Price    float32
-			Quantity int
-		}(request.Products),
+		Products: make([]usecase.Product, len(request.Products)),
 	}
 
-	orderId, err := h.app.SaveOrder.Execute(ctx.Request().Context(), saveOrder)
+	for i, p := range request.Products {
+		saveOrder.Products[i] = usecase.Product{
+			ID:       p.ID,
+			Image:    p.Image,
+			Name:     p.Name,
+			Price:    p.Price,
+			Quantity: p.Quantity,
+		}
+	}
+
+	paymentResponse, err := h.app.SaveOrder.Execute(ctx.Request().Context(), saveOrder)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	return ctx.JSON(http.StatusOK, struct {
-		OrderId int `json:"order_id"`
-	}{OrderId: orderId})
+		Key string `json:"payment_key"`
+		URL string `json:"payment_URL"`
+	}{
+		Key: paymentResponse.Key,
+		URL: paymentResponse.URL,
+	})
 }
 
 func (h HttpOrderHandler) GetOrders(ctx echo.Context) error {
@@ -80,7 +88,7 @@ func (h HttpOrderHandler) ProcessStripeEvent(ctx echo.Context) error {
 
 func (h HttpOrderHandler) mapToResponse(order domain.Order) Order {
 	return Order{
-		Id:         order.Id,
+		ID:         order.ID,
 		PaymentKey: order.Payment_key,
 		Status:     OrderStatus(order.Status),
 		TotalPrice: float32(order.Total_price) / 100,

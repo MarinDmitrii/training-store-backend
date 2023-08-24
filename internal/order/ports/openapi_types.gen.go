@@ -16,7 +16,7 @@ const (
 // Order defines model for Order.
 type Order struct {
 	// Id The unique identifier of the order
-	Id int `json:"id"`
+	ID int `json:"id"`
 
 	// PaymentKey The payment key of the order
 	PaymentKey string `json:"payment_key"`
@@ -36,7 +36,7 @@ type PostOrder struct {
 	// Products The products of the order
 	Products []struct {
 		// Id The unique identifier of the product
-		Id int `json:"id"`
+		ID int `json:"id"`
 
 		// Image The image of the product
 		Image string `json:"image"`
@@ -57,7 +57,7 @@ type StripeEvent struct {
 	Data       *struct {
 		Object *StripeObject `json:"object,omitempty"`
 	} `json:"data,omitempty"`
-	Id     string `json:"id"`
+	ID     string `json:"id"`
 	Object string `json:"object"`
 	Type   string `json:"type"`
 }

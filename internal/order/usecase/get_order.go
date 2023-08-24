@@ -15,5 +15,5 @@ func NewGetOrderByIdUseCase(orderRepository domain.Repository) *GetOrderByIdUseC
 }
 
 func (uc *GetOrderByIdUseCase) Execute(ctx context.Context, orderId int) (domain.Order, error) {
-	return uc.orderRepository.GetOrderById(ctx, orderId)
+	return uc.orderRepository.GetOrderByID(ctx, orderId)
 }

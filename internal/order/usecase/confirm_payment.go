@@ -25,6 +25,10 @@ func (uc *ConfirmPaymentUseCase) Execute(ctx context.Context, payment_key string
 	}
 
 	order.CompletePayment()
+	_, err = uc.orderRepository.SaveOrder(ctx, order)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

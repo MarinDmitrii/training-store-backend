@@ -10,7 +10,7 @@ const (
 var NotFoundError = errors.New("Order not found")
 
 type Order struct {
-	Id          int
+	ID          int
 	Payment_key string
 	Status      string
 	Total_price int

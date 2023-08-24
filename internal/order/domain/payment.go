@@ -13,8 +13,8 @@ const (
 )
 
 type Payment struct {
-	Id             string
-	OrderId        string
+	ID             string
+	OrderID        string
 	Status         string
 	TransactionKey string
 	Link           string
@@ -22,9 +22,9 @@ type Payment struct {
 	Type           string
 }
 
-func NewPayment(orderId string, price uint, paymentType string) Payment {
+func NewPayment(orderID string, price uint, paymentType string) Payment {
 	return Payment{
-		OrderId: orderId,
+		OrderID: orderID,
 		Status:  StatusNew,
 		Price:   price,
 		Type:    paymentType,
