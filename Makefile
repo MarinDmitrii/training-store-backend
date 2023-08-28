@@ -6,7 +6,8 @@ openapi_http:
 
 .PHONY: build
 build:
-	go build -o ${BINARY} cmd/main.go
+	# go build -o ${BINARY} cmd/main.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o ${BINARY} cmd/main.go
 
 .PHONY: clean
 clean:
@@ -14,7 +15,7 @@ clean:
 
 .PHONY: docker
 docker:
-	docker build -t training-store-backend .
+	docker build -t ${BINARY} .
 
 .PHONY: run
 run:

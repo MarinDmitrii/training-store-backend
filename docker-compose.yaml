@@ -18,7 +18,20 @@ services:
     networks:
       - training-store-backend
 
-# добавить бинарник проекта
+  training-store:
+    image: training-store-backend:latest
+    container_name: training-store
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    networks:
+      - training-store-backend
+    volumes:
+      - ./web/stripe:/app/web/stripe
+      - ./storage:/app/storage
+
 
   pgadmin:
     container_name: pgadmin4
