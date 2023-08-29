@@ -23,11 +23,6 @@ type Application struct {
 	httpServer *http.Server
 }
 
-func (a *Application) buildStatic(router *echo.Echo) {
-	router.Static("/web/stripe/payment", "web/stripe")
-	router.Static("/documents", "storage")
-}
-
 func (a *Application) Run(addr string, debug bool) error {
 	router := echo.New()
 	router.Use(middleware.Logger())

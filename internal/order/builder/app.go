@@ -72,18 +72,3 @@ func NewApplication(ctx context.Context) (*Application, func()) {
 		ConfirmPayment: usecase.NewConfirmPaymentUseCase(orderRepository),
 	}, func() { db.Close() }
 }
-
-// func getPaymentService() usecase.PaymentService {
-// 	switch os.Getenv("PAYMENT_SERVICE") {
-// 	case "stripe":
-// 		return adapters.NewStripeService(
-// 			os.Getenv("STRIPE_PRIVATE_KEY"),
-// 			os.Getenv("STRIPE_TRANSACTION_URL"),
-// 			os.Getenv("STRIPE_SUCCESS_URL"),
-// 			os.Getenv("STRIPE_CANCEL_URL"),
-// 		)
-// 	}
-
-// 	log.Logger.Fatal("unknown payment type")
-// 	return nil
-// }

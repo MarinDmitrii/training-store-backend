@@ -64,7 +64,7 @@ type StripeEvent struct {
 
 // StripeObject defines model for StripeObject.
 type StripeObject struct {
-	Id            string  `json:"id"`
+	ID            string  `json:"id"`
 	Object        string  `json:"object"`
 	PaymentIntent *string `json:"payment_intent,omitempty"`
 	PaymentStatus *string `json:"payment_status,omitempty"`

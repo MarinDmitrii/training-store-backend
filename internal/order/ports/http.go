@@ -78,7 +78,7 @@ func (h HttpOrderHandler) ProcessStripeEvent(ctx echo.Context) error {
 
 	switch event.Type {
 	case "checkout.session.completed":
-		if err := h.app.ConfirmPayment.Execute(ctx.Request().Context(), event.Data.Object.Id); err != nil {
+		if err := h.app.ConfirmPayment.Execute(ctx.Request().Context(), event.Data.Object.ID); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 	}
