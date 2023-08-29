@@ -6,6 +6,7 @@ import (
 
 	"github.com/MarinDmitrii/training-store-backend/common/log"
 	"github.com/MarinDmitrii/training-store-backend/internal/order/usecase"
+	"github.com/joho/godotenv"
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/checkout/session"
 )
@@ -17,6 +18,11 @@ type StripeService struct {
 }
 
 func NewStripeService() *StripeService {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	key := os.Getenv("STRIPE_PRIVATE_KEY")
 	successURL := os.Getenv("STRIPE_SUCCESS_URL")
 	cancelURL := os.Getenv("STRIPE_CANCEL_URL")
