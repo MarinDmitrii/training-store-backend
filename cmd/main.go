@@ -27,6 +27,7 @@ func (a *Application) Run(addr string, debug bool) error {
 	router := echo.New()
 	router.Use(middleware.Logger())
 	router.Use(middleware.Recover())
+	router.Static("/web/stripe/payment", "web/stripe")
 
 	ctx := context.Background()
 
